@@ -16,8 +16,6 @@ const NftDropPage = (props: Props) => {
     return connectWithMetamask();
   }, [address]);
 
-  console.log("MY ADDRESS", address);
-
   return (
     <div className="flex h-screen flex-col lg:grid lg:grid-cols-10">
       {/* LEFT */}
@@ -60,6 +58,14 @@ const NftDropPage = (props: Props) => {
           </button>
         </header>
         <hr className="mb-2 border" />
+        {address && (
+          <p className="text-center text-sm text-rose-400">
+            You're logged in with wallet{" "}
+            {`${address.substring(0, 5)}...${address.substring(
+              address.length - 5
+            )}`}
+          </p>
+        )}
 
         {/* content */}
 
