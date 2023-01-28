@@ -1,8 +1,23 @@
-import React from "react";
+import { useAddress, useDisconnect, useMetamask } from "@thirdweb-dev/react";
+import React, { useCallback } from "react";
 
 type Props = {};
 
 const NftDropPage = (props: Props) => {
+  // AUTH
+  const connectWithMetamask = useMetamask();
+  const address = useAddress();
+  const disconnect = useDisconnect();
+
+  const handleAuth = useCallback(() => {
+    if (address) {
+      return disconnect();
+    }
+    return connectWithMetamask();
+  }, [address]);
+
+  console.log("MY ADDRESS", address);
+
   return (
     <div className="flex h-screen flex-col lg:grid lg:grid-cols-10">
       {/* LEFT */}
@@ -37,8 +52,11 @@ const NftDropPage = (props: Props) => {
             </span>{" "}
             NFT Marketplace
           </h2>
-          <button className="rounded-full px-4 py-2 bg-pink-600 hover:bg-pink-700 transition-colors text-white font-bold text-sm lg:px-5 lg:py-3 lg:text-base">
-            Sign in
+          <button
+            onClick={handleAuth}
+            className="rounded-full px-4 py-2 bg-pink-600 hover:bg-pink-700 transition-colors text-white font-bold text-sm lg:px-5 lg:py-3 lg:text-base"
+          >
+            {address ? "Sign out" : "Sign in"}
           </button>
         </header>
         <hr className="mb-2 border" />
