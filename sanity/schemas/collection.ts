@@ -43,6 +43,14 @@ export default defineType({
       to: {type: 'creator'},
     }),
     defineField({
+      name: 'mainImage',
+      title: 'Main image',
+      type: 'image',
+      options: {
+        hotspot: true,
+      },
+    }),
+    defineField({
       name: 'previewImage',
       title: 'Preview image',
       type: 'image',
