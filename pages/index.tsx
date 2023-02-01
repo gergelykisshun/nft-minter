@@ -16,11 +16,11 @@ const Home: NextPage<HomeProps> = ({ collections }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <h1 className="text-red-500 text-4xl font-bold text-center">
+      <h1 className="text-red-500 text-4xl font-extralight text-center mb-10">
         Welcome to NFT DROP
       </h1>
 
-      <div className="grid gap-3 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 mt-5 p-10 bg-slate-100 shadow-xl shadow-rose-400/20 rounded-xl">
+      <div className="grid gap-3 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 p-10 bg-slate-100 shadow-xl shadow-rose-400/20 rounded-xl">
         {collections.map((collection) => (
           <div
             key={collection._id}
@@ -34,7 +34,7 @@ const Home: NextPage<HomeProps> = ({ collections }) => {
             />
 
             <div>
-              <h2 className="text-3xl">{collection.title}</h2>
+              <h2 className="text-3xl mt-2">{collection.title}</h2>
               <p className="mt-2 text-sm text-gray-400">
                 {collection.description}
               </p>
