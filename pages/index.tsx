@@ -22,7 +22,8 @@ const Home: NextPage<HomeProps> = ({ collections }) => {
 
       <div className="grid gap-3 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 p-10 bg-slate-100 shadow-xl shadow-rose-400/20 rounded-xl">
         {collections.map((collection) => (
-          <div
+          <Link
+            href={`/nft/${collection.slug.current}`}
             key={collection._id}
             className="flex flex-col items-center cursor-pointer transition-all duration-200 hover:scale-105"
           >
@@ -39,7 +40,7 @@ const Home: NextPage<HomeProps> = ({ collections }) => {
                 {collection.description}
               </p>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>
