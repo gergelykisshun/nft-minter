@@ -3,6 +3,5 @@ export interface ISlug {
 }
 
 export interface ISanityImage {
-  _ref: string;
-  _type: string;
+  asset: { url: string };
 }
