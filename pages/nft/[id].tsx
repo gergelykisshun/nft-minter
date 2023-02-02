@@ -1,7 +1,12 @@
-import { useAddress, useDisconnect, useMetamask } from "@thirdweb-dev/react";
+import {
+  useAddress,
+  useDisconnect,
+  useMetamask,
+  useContract,
+} from "@thirdweb-dev/react";
 import { GetServerSideProps, NextPage } from "next";
 import Link from "next/link";
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { ICollection } from "../../models/collection";
 import { sanityClient, urlFor } from "../../sanity";
 
@@ -10,6 +15,25 @@ type NftPageProps = {
 };
 
 const NftDropPage: NextPage<NftPageProps> = ({ collection }) => {
+  const [claimed, setClaimed] = useState<number>(0);
+  const [total, setTotal] = useState<number>(0);
+
+  const nftDrop = useContract(collection.address, "nft-drop").contract;
+
+  const getNftCollectionData = async () => {
+    if (nftDrop) {
+      const claimed = await nftDrop.getAllClaimed();
+      const total = await nftDrop.getAll();
+
+      setClaimed(claimed.length);
+      setTotal(total.length);
+    }
+  };
+
+  useEffect(() => {
+    getNftCollectionData();
+  }, [nftDrop]);
+
   // AUTH
   const connectWithMetamask = useMetamask();
   const address = useAddress();
@@ -82,7 +106,7 @@ const NftDropPage: NextPage<NftPageProps> = ({ collection }) => {
             {collection.title}
           </h2>
           <p className="text-green-500 font-extralight text-sm">
-            4/15 NFTs claimed
+            {claimed}/{total} NFTs claimed
           </p>
         </div>
 
