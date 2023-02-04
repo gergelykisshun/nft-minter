@@ -71,6 +71,8 @@ const NftDropPage: NextPage<NftPageProps> = ({ collection }) => {
     try {
       const nftSuccess = await nftDrop.claimTo(address, quantity);
 
+      // TODO show which NFT we got
+
       console.log(await nftSuccess[0].data()); // NFT data
       console.log(nftSuccess[0].id); // id of NFT
       console.log(nftSuccess[0].receipt); // transaction receipt
