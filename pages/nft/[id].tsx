@@ -23,7 +23,6 @@ const NftDropPage: NextPage<NftPageProps> = ({ collection }) => {
 
   const getNftCollectionData = async () => {
     if (nftDrop) {
-      setLoading(true);
       try {
         const claimed = await nftDrop.getAllClaimed();
         const total = await nftDrop.getAll();
@@ -123,12 +122,26 @@ const NftDropPage: NextPage<NftPageProps> = ({ collection }) => {
         </div>
 
         {/* mint button */}
-        <button
-          className="m-10 mb-5 py-3 bg-red-500 hover:bg-red-600 transition-colors text-white rounded-full font-bold disabled:bg-gray-400"
-          disabled={loading || claimed === total || !address}
-        >
-          Mint NFT (0.1 ETH)
-        </button>
+
+        {address ? (
+          <button
+            className="m-10 mb-5 py-3 bg-red-500 hover:bg-red-600 transition-colors text-white rounded-full font-bold disabled:bg-gray-400"
+            disabled={loading || claimed === total || !address}
+          >
+            {loading
+              ? "Loading"
+              : claimed === total
+              ? "Out of stock"
+              : `Mint NFT (0.1 ETH)`}
+          </button>
+        ) : (
+          <button
+            onClick={handleAuth}
+            className="m-10 mb-5 py-3 bg-red-500 hover:bg-red-600 transition-colors text-white rounded-full font-bold"
+          >
+            Sign in to mint
+          </button>
+        )}
       </div>
     </div>
   );
