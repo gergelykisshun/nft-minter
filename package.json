@@ -10,10 +10,12 @@
     "@sanity/vision": "^3.2.6",
     "@thirdweb-dev/react": "^3.5.1",
     "@thirdweb-dev/sdk": "^3.5.1",
+    "bootstrap": "^5.2.3",
     "ethers": "^5.7.2",
     "next": "latest",
     "next-sanity": "^4.1.2",
     "react": "18.2.0",
+    "react-bootstrap": "^2.7.0",
     "react-dom": "18.2.0",
     "react-hot-toast": "^2.4.0"
   },
