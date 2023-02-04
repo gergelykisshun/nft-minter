@@ -7,6 +7,7 @@ import {
 import { GetServerSideProps, NextPage } from "next";
 import Link from "next/link";
 import React, { useCallback, useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import { ICollection } from "../../models/collection";
 import { sanityClient, urlFor } from "../../sanity";
 
@@ -17,6 +18,7 @@ type NftPageProps = {
 const NftDropPage: NextPage<NftPageProps> = ({ collection }) => {
   const [claimed, setClaimed] = useState<number>(0);
   const [total, setTotal] = useState<number>(0);
+  const [price, setPrice] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
 
   const nftDrop = useContract(collection.address, "nft-drop").contract;
@@ -26,7 +28,11 @@ const NftDropPage: NextPage<NftPageProps> = ({ collection }) => {
       try {
         const claimed = await nftDrop.getAllClaimed();
         const total = await nftDrop.getAll();
+        const price = await nftDrop.claimConditions.getActive();
 
+        setPrice(
+          `${price.currencyMetadata.displayValue} ${price.currencyMetadata.symbol}`
+        );
         setClaimed(claimed.length);
         setTotal(total.length);
       } finally {
@@ -50,6 +56,34 @@ const NftDropPage: NextPage<NftPageProps> = ({ collection }) => {
     }
     return connectWithMetamask();
   }, [address]);
+
+  // MINT
+
+  const mintNft = async () => {
+    if (!nftDrop || !address) return;
+
+    const quantity = 1;
+
+    setLoading(true);
+
+    const notification = toast.loading("Minting...");
+
+    try {
+      const nftSuccess = await nftDrop.claimTo(address, quantity);
+
+      console.log(await nftSuccess[0].data()); // NFT data
+      console.log(nftSuccess[0].id); // id of NFT
+      console.log(nftSuccess[0].receipt); // transaction receipt
+
+      toast.success("Minting successful!");
+    } catch (e) {
+      console.log(e);
+      toast.error("Minting failed");
+    } finally {
+      toast.dismiss(notification);
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="flex h-screen flex-col lg:grid lg:grid-cols-10">
@@ -125,6 +159,7 @@ const NftDropPage: NextPage<NftPageProps> = ({ collection }) => {
 
         {address ? (
           <button
+            onClick={mintNft}
             className="m-10 mb-5 py-3 bg-red-500 hover:bg-red-600 transition-colors text-white rounded-full font-bold disabled:bg-gray-400"
             disabled={loading || claimed === total || !address}
           >
@@ -132,7 +167,7 @@ const NftDropPage: NextPage<NftPageProps> = ({ collection }) => {
               ? "Loading"
               : claimed === total
               ? "Out of stock"
-              : `Mint NFT (0.1 ETH)`}
+              : `Mint NFT (${price})`}
           </button>
         ) : (
           <button
