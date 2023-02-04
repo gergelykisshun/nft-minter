@@ -123,7 +123,10 @@ const NftDropPage: NextPage<NftPageProps> = ({ collection }) => {
         </div>
 
         {/* mint button */}
-        <button className="m-10 mb-5 py-3 bg-red-500 hover:bg-red-600 transition-colors text-white rounded-full font-bold">
+        <button
+          className="m-10 mb-5 py-3 bg-red-500 hover:bg-red-600 transition-colors text-white rounded-full font-bold disabled:bg-gray-400"
+          disabled={loading || claimed === total}
+        >
           Mint NFT (0.1 ETH)
         </button>
       </div>
