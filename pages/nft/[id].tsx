@@ -8,6 +8,7 @@ import { GetServerSideProps, NextPage } from "next";
 import Link from "next/link";
 import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
+import MintSuccessModal from "../../components/modals/MintSuccessModal";
 import { ICollection } from "../../models/collection";
 import { sanityClient, urlFor } from "../../sanity";
 
@@ -20,6 +21,9 @@ const NftDropPage: NextPage<NftPageProps> = ({ collection }) => {
   const [total, setTotal] = useState<number>(0);
   const [price, setPrice] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
+
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [mintedNftImage, setMintedNftImage] = useState<string>("");
 
   const nftDrop = useContract(collection.address, "nft-drop").contract;
 
@@ -73,11 +77,14 @@ const NftDropPage: NextPage<NftPageProps> = ({ collection }) => {
 
       // TODO show which NFT we got
 
-      console.log(await nftSuccess[0].data()); // NFT data
-      console.log(nftSuccess[0].id); // id of NFT
-      console.log(nftSuccess[0].receipt); // transaction receipt
+      const mintedNFt = await nftSuccess[0].data();
+      console.log("NFT info", mintedNFt);
 
-      toast.success("Minting successful!");
+      // console.log(nftSuccess[0].id); // id of NFT
+      // console.log(nftSuccess[0].receipt); // transaction receipt
+
+      setMintedNftImage(mintedNFt.metadata.image || "");
+      setIsModalOpen(true);
     } catch (e) {
       console.log(e);
       toast.error("Minting failed");
@@ -89,6 +96,13 @@ const NftDropPage: NextPage<NftPageProps> = ({ collection }) => {
 
   return (
     <div className="flex h-screen flex-col lg:grid lg:grid-cols-10">
+      {/* MODAL */}
+      {isModalOpen && mintedNftImage && (
+        <MintSuccessModal
+          handleClose={() => setIsModalOpen(false)}
+          imageUrlOfNft={mintedNftImage}
+        />
+      )}
       {/* LEFT */}
       <div className="bg-gradient-to-br from-cyan-500 to-rose-500 flex px-5 justify-center items-center lg:col-span-4">
         <div className="flex flex-col items-center">
