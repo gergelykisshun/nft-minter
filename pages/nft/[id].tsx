@@ -1,7 +1,13 @@
-import { useAddress, useDisconnect, useMetamask } from "@thirdweb-dev/react";
+import {
+  useAddress,
+  useDisconnect,
+  useMetamask,
+  useContract,
+} from "@thirdweb-dev/react";
 import { GetServerSideProps, NextPage } from "next";
 import Link from "next/link";
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import { ICollection } from "../../models/collection";
 import { sanityClient, urlFor } from "../../sanity";
 
@@ -10,6 +16,35 @@ type NftPageProps = {
 };
 
 const NftDropPage: NextPage<NftPageProps> = ({ collection }) => {
+  const [claimed, setClaimed] = useState<number>(0);
+  const [total, setTotal] = useState<number>(0);
+  const [price, setPrice] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const nftDrop = useContract(collection.address, "nft-drop").contract;
+
+  const getNftCollectionData = async () => {
+    if (nftDrop) {
+      try {
+        const claimed = await nftDrop.getAllClaimed();
+        const total = await nftDrop.getAll();
+        const price = await nftDrop.claimConditions.getActive();
+
+        setPrice(
+          `${price.currencyMetadata.displayValue} ${price.currencyMetadata.symbol}`
+        );
+        setClaimed(claimed.length);
+        setTotal(total.length);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    getNftCollectionData();
+  }, [nftDrop]);
+
   // AUTH
   const connectWithMetamask = useMetamask();
   const address = useAddress();
@@ -21,6 +56,34 @@ const NftDropPage: NextPage<NftPageProps> = ({ collection }) => {
     }
     return connectWithMetamask();
   }, [address]);
+
+  // MINT
+
+  const mintNft = async () => {
+    if (!nftDrop || !address) return;
+
+    const quantity = 1;
+
+    setLoading(true);
+
+    const notification = toast.loading("Minting...");
+
+    try {
+      const nftSuccess = await nftDrop.claimTo(address, quantity);
+
+      console.log(await nftSuccess[0].data()); // NFT data
+      console.log(nftSuccess[0].id); // id of NFT
+      console.log(nftSuccess[0].receipt); // transaction receipt
+
+      toast.success("Minting successful!");
+    } catch (e) {
+      console.log(e);
+      toast.error("Minting failed");
+    } finally {
+      toast.dismiss(notification);
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="flex h-screen flex-col lg:grid lg:grid-cols-10">
@@ -81,15 +144,39 @@ const NftDropPage: NextPage<NftPageProps> = ({ collection }) => {
           <h2 className="text-4xl font-bold lg:font-extrabold lg:text-5xl">
             {collection.title}
           </h2>
-          <p className="text-green-500 font-extralight text-sm">
-            4/15 NFTs claimed
-          </p>
+          {loading ? (
+            <p className="text-green-500 font-light text-sm animate-pulse">
+              Loading supply...
+            </p>
+          ) : (
+            <p className="text-green-500 font-light text-sm">
+              {`${claimed}/${total} NFTs claimed`}
+            </p>
+          )}
         </div>
 
         {/* mint button */}
-        <button className="m-10 mb-5 py-3 bg-red-500 hover:bg-red-600 transition-colors text-white rounded-full font-bold">
-          Mint NFT (0.1 ETH)
-        </button>
+
+        {address ? (
+          <button
+            onClick={mintNft}
+            className="m-10 mb-5 py-3 bg-red-500 hover:bg-red-600 transition-colors text-white rounded-full font-bold disabled:bg-gray-400"
+            disabled={loading || claimed === total || !address}
+          >
+            {loading
+              ? "Loading"
+              : claimed === total
+              ? "Out of stock"
+              : `Mint NFT (${price})`}
+          </button>
+        ) : (
+          <button
+            onClick={handleAuth}
+            className="m-10 mb-5 py-3 bg-red-500 hover:bg-red-600 transition-colors text-white rounded-full font-bold"
+          >
+            Sign in to mint
+          </button>
+        )}
       </div>
     </div>
   );
