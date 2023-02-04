@@ -17,16 +17,22 @@ type NftPageProps = {
 const NftDropPage: NextPage<NftPageProps> = ({ collection }) => {
   const [claimed, setClaimed] = useState<number>(0);
   const [total, setTotal] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const nftDrop = useContract(collection.address, "nft-drop").contract;
 
   const getNftCollectionData = async () => {
     if (nftDrop) {
-      const claimed = await nftDrop.getAllClaimed();
-      const total = await nftDrop.getAll();
+      setLoading(true);
+      try {
+        const claimed = await nftDrop.getAllClaimed();
+        const total = await nftDrop.getAll();
 
-      setClaimed(claimed.length);
-      setTotal(total.length);
+        setClaimed(claimed.length);
+        setTotal(total.length);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -105,9 +111,15 @@ const NftDropPage: NextPage<NftPageProps> = ({ collection }) => {
           <h2 className="text-4xl font-bold lg:font-extrabold lg:text-5xl">
             {collection.title}
           </h2>
-          <p className="text-green-500 font-extralight text-sm">
-            {claimed}/{total} NFTs claimed
-          </p>
+          {loading ? (
+            <p className="text-green-500 font-light text-sm animate-pulse">
+              Loading supply...
+            </p>
+          ) : (
+            <p className="text-green-500 font-light text-sm">
+              {`${claimed}/${total} NFTs claimed`}
+            </p>
+          )}
         </div>
 
         {/* mint button */}
