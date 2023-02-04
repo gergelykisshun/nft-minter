@@ -14,7 +14,13 @@ const MintSuccessModal: FC<Props> = ({ handleClose, imageUrlOfNft }) => {
         <Modal.Title>Hooray... here is your NFT</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <img src={imageUrlOfNft} alt="NFT" />
+        <div className="w-max flex items-center justify-center">
+          <img
+            src={imageUrlOfNft}
+            alt="NFT"
+            className="h-60 w-60 object-cover rounded-xl"
+          />
+        </div>
       </Modal.Body>
     </Modal>
   );
