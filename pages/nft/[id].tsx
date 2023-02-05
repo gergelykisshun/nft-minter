@@ -80,8 +80,8 @@ const NftDropPage: NextPage<NftPageProps> = ({ collection }) => {
       const mintedNFt = await nftSuccess[0].data();
       console.log("NFT info", mintedNFt);
 
-      // console.log(nftSuccess[0].id); // id of NFT
-      // console.log(nftSuccess[0].receipt); // transaction receipt
+      console.log("NFT ID", nftSuccess[0].id); // id of NFT
+      console.log("receipt", nftSuccess[0].receipt); // transaction receipt
 
       setMintedNftImage(mintedNFt.metadata.image || "");
       setIsModalOpen(true);
