@@ -75,16 +75,11 @@ const NftDropPage: NextPage<NftPageProps> = ({ collection }) => {
     try {
       const nftSuccess = await nftDrop.claimTo(address, quantity);
 
-      // TODO show which NFT we got
-
       const mintedNFt = await nftSuccess[0].data();
-      console.log("NFT info", mintedNFt);
-
-      console.log("NFT ID", nftSuccess[0].id); // id of NFT
-      console.log("receipt", nftSuccess[0].receipt); // transaction receipt
 
       setMintedNftImage(mintedNFt.metadata.image || "");
       setIsModalOpen(true);
+      getNftCollectionData();
     } catch (e) {
       console.log(e);
       toast.error("Minting failed");
