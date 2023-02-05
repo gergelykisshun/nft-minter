@@ -11,4 +11,5 @@ export interface ICollection {
   previewImage: ISanityImage;
   slug: ISlug;
   creator: ICreator;
+  mintable: boolean;
 }

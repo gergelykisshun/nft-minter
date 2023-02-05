@@ -6,6 +6,12 @@ export default defineType({
   type: 'document',
   fields: [
     defineField({
+      name: 'mintable',
+      title: 'Mintable',
+      type: 'boolean',
+      initialValue: false,
+    }),
+    defineField({
       name: 'title',
       description: 'Enter the title of the NFT drop',
       title: 'Title',
